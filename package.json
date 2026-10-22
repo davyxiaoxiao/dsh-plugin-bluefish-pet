@@ -1,6 +1,6 @@
 {
   "name": "dsh-bluefish-pet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "启动 / 隐藏 / 退出鲸鱼娘桌面宠物（DSH 斜杠命令）",
   "type": "module",
   "main": "./lib/index.js",

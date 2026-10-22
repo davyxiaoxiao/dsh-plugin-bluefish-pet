@@ -1,5 +1,10 @@
 # dsh-bluefish-pet
 
+[![npm version](https://img.shields.io/npm/v/dsh-bluefish-pet?color=2f81f7&label=npm)](https://www.npmjs.com/package/dsh-bluefish-pet)
+[![npm downloads](https://img.shields.io/npm/dm/dsh-bluefish-pet?color=2f81f7)](https://www.npmjs.com/package/dsh-bluefish-pet)
+[![license](https://img.shields.io/npm/l/dsh-bluefish-pet?color=54e39a)](./LICENSE)
+[![platform](https://img.shields.io/badge/platform-macOS%2013%2B-000?logo=apple&logoColor=white)](https://github.com/davyxiaoxiao/dsh-plugin-bluefish-pet)
+
 > 在 DSH 侧边栏启动 / 隐藏 / 显示 / 退出「鲸鱼娘」桌面宠物，并随 DSH 启动自动拉起。
 
 一个 **host + client** 的 DSH 插件，配合独立的 macOS 桌宠 App「鲸鱼娘」使用。
@@ -13,7 +18,7 @@
   - 灰点「鲸鱼娘」：桌宠没在运行
   - 绿点「鲸鱼娘 开」：正在桌面上
   - 黄点「鲸鱼娘 隐」：还在运行但已隐藏
-- **斜杠命令**：`/pet`、`/pet-show`、`/pet-hide`、`/pet-quit`、`/pet-status`
+- **斜杠命令**：`/pet`、`/pet-start`、`/pet-show`、`/pet-hide`、`/pet-quit`、`/pet-status`
 - **随 DSH 启动自动拉起**：DSH 启动后 1.5 秒检查一次，没运行就打开 App，失败自动重试两次
 - **不依赖 DSH 的 webServer 路由**：按钮直接访问桌宠 App 内置的本地控制端口 `127.0.0.1:47113`，所以桌面版 DSH 也能用
 - 状态每 5 秒同步一次；点击立即刷新
@@ -22,18 +27,22 @@
 
 - macOS 13 或更高
 - DSH 桌面版 `>= 0.1.5-rc.1`
-- 先安装 **鲸鱼娘 App**，默认放在 `/Applications/WhaleGirl.app`
+- 先安装 [鲸鱼娘 App](https://github.com/davyxiaoxiao/whalegirl)，默认放在 `/Applications/WhaleGirl.app`
   （也支持 `WHALEGIRL_APP=/path/to/WhaleGirl.app`，以及 `~/Applications`、旧 BlueFish 路径）
 
 ## 安装
 
-### 方式 A：DSH 插件页输入名字（npm 发布后）
+插件只有几十 KB，安装动作就是在 DSH 的插件页填一个来源。先确认上面「前置条件」里的鲸鱼娘 App 已经装好。
 
-在 DSH 左侧「插件」页 → 安装 → 输入：
+### 方式 A：npm（推荐）
+
+在 DSH 左侧「插件」页 → 安装 → 输入包名：
 
 ```
 dsh-bluefish-pet
 ```
+
+即从 npm 官方源拉取最新版本：<https://www.npmjs.com/package/dsh-bluefish-pet>
 
 ### 方式 B：GitHub 仓库
 
@@ -132,6 +141,12 @@ cordis.patch.yml   组合包 patch，安装后自动挂载
 
 纯 JavaScript，无构建步骤。本地调试时把文件夹路径填进 DSH 插件页安装即可；改完代码重启 DSH 生效。
 `npm pack` 可打出发布用的 tarball。
+
+## 链接
+
+- npm 包：<https://www.npmjs.com/package/dsh-bluefish-pet>
+- GitHub 仓库：<https://github.com/davyxiaoxiao/dsh-plugin-bluefish-pet>
+- 问题反馈：<https://github.com/davyxiaoxiao/dsh-plugin-bluefish-pet/issues>
 
 ## License
 
