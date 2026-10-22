@@ -42,6 +42,8 @@
 dsh-bluefish-pet
 ```
 
+npm 页面：https://www.npmjs.com/package/dsh-bluefish-pet
+
 即从 npm 官方源拉取最新版本：<https://www.npmjs.com/package/dsh-bluefish-pet>
 
 ### 方式 B：GitHub 仓库
