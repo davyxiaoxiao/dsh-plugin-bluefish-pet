@@ -1,0 +1,13 @@
+# Bundle patch for dsh-bluefish-pet.
+#
+# Installing through the official CLI:
+#
+#   dsh plugin --profile desktop add /path/to/dsh-plugin-bluefish-pet
+#
+# reconciles dsh.profile.bundles against installed packages: this manifest
+# declares `dsh.bundle.patch`, so the package joins the layer stack and this
+# insert row mounts the plugin. Manual mounts are also possible by copying this
+# insert into the profile's own cordis.patch.yml.
+- insert:
+    - id: bluefish-pet
+      name: dsh-bluefish-pet
