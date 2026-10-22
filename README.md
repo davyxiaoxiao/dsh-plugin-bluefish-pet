@@ -40,7 +40,7 @@ dsh-bluefish-pet
 在同一个安装框输入：
 
 ```
-github:<your-github-user>/dsh-bluefish-pet
+github:davyxiaoxiao/dsh-plugin-bluefish-pet
 ```
 
 ### 方式 C：本地文件夹（开发 / 离线）
