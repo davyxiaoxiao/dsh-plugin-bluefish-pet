@@ -1,32 +1,72 @@
 # dsh-bluefish-pet
 
-在 DSH 里用斜杠命令启动 / 显示 / 隐藏 / 退出「鲸鱼娘」桌面宠物。
+> 在 DSH 侧边栏启动 / 隐藏 / 显示 / 退出「鲸鱼娘」桌面宠物，并随 DSH 启动自动拉起。
 
-## 安装（朋友用：DSH 插件页从本地文件夹安装）
+一个 **host + client** 的 DSH 插件，配合独立的 macOS 桌宠 App「鲸鱼娘」使用。
+*Control the BlueFish desktop pet from DSH's sidebar — start, hide, show, quit, and auto-launch with DSH.*
 
-1. 先把鲸鱼娘 App 安装到 `/Applications/WhaleGirl.app`（插件会在这里找它）。
-2. 解压 `dsh-plugin-bluefish-pet` 文件夹，随便放在一个固定位置（例如 `~/Downloads/dsh-plugin-bluefish-pet`）。
-3. 打开 DSH 桌面版 → 左侧「插件」页 → 安装插件；
-4. 在安装框里粘贴这个文件夹的绝对路径（例如 `/Users/你的用户名/Downloads/dsh-plugin-bluefish-pet`），确认安装；
-5. 重启 DSH。侧边栏底部会出现「鲸鱼娘」按钮，DSH 启动时也会自动拉起鲸鱼娘。
+---
 
-如果安装页只接受 npm / GitHub 包名：这个包也可以直接发布（包名 `dsh-bluefish-pet` 在 npm 上目前未被占用）：
+## 功能
 
-```bash
-cd dsh-plugin-bluefish-pet
-npm login
-npm publish --access public
+- **侧边栏「鲸鱼娘」按钮**：实时显示桌宠状态，点一下切换显示 / 隐藏
+  - 灰点「鲸鱼娘」：桌宠没在运行
+  - 绿点「鲸鱼娘 开」：正在桌面上
+  - 黄点「鲸鱼娘 隐」：还在运行但已隐藏
+- **斜杠命令**：`/pet`、`/pet-show`、`/pet-hide`、`/pet-quit`、`/pet-status`
+- **随 DSH 启动自动拉起**：DSH 启动后 1.5 秒检查一次，没运行就打开 App，失败自动重试两次
+- **不依赖 DSH 的 webServer 路由**：按钮直接访问桌宠 App 内置的本地控制端口 `127.0.0.1:47113`，所以桌面版 DSH 也能用
+- 状态每 5 秒同步一次；点击立即刷新
+
+## 前置条件
+
+- macOS 13 或更高
+- DSH 桌面版 `>= 0.1.5-rc.1`
+- 先安装 **鲸鱼娘 App**，默认放在 `/Applications/WhaleGirl.app`
+  （也支持 `WHALEGIRL_APP=/path/to/WhaleGirl.app`，以及 `~/Applications`、旧 BlueFish 路径）
+
+## 安装
+
+### 方式 A：DSH 插件页输入名字（npm 发布后）
+
+在 DSH 左侧「插件」页 → 安装 → 输入：
+
+```
+dsh-bluefish-pet
 ```
 
-之后朋友在插件市场搜索 `dsh-bluefish-pet` 安装即可。
+### 方式 B：GitHub 仓库
 
-## 自动启动
+在同一个安装框输入：
 
-插件默认在 **DSH 启动后自动拉起鲸鱼娘**：主机半边在启动 1.5 秒后检查一次（没运行就 `open WhaleGirl.app`，失败会重试两次），GUI 半边挂载时也会检查一次并补启动；不需要再单独打开。
+```
+github:<your-github-user>/dsh-bluefish-pet
+```
 
-自动启动的每一步会写到 `dsh-plugin-bluefish-pet/plugin.log`，如果没启动，先看这个日志里的 `auto start` 行。
+### 方式 C：本地文件夹（开发 / 离线）
 
-想关掉自动启动，在 profile 的 `cordis.patch.yml` 里给这个条目加 config：
+解压本仓库到固定位置，在安装框输入文件夹绝对路径，例如：
+
+```
+/Users/<you>/Downloads/dsh-plugin-bluefish-pet
+```
+
+安装完成后**重启 DSH**。侧边栏底部会出现「鲸鱼娘」按钮。
+
+## 命令
+
+| 命令 | 作用 |
+| --- | --- |
+| `/pet` | 没启动就启动；已在运行就切换显示 / 隐藏 |
+| `/pet-start` | 启动桌宠 |
+| `/pet-show` | 显示桌宠 |
+| `/pet-hide` | 隐藏桌宠 |
+| `/pet-quit` | 退出桌宠 |
+| `/pet-status` | 查看是否在运行 / 是否显示中 |
+
+## 配置
+
+默认随 DSH 自动启动。要关掉，在 DSH profile 的插件条目上加：
 
 ```yaml
 - insert:
@@ -36,85 +76,63 @@ npm publish --access public
         autoStart: false
 ```
 
-## 界面
+## 工作原理
 
-安装后 DSH 侧边栏底部（和 cost-meter 同一片 footer）会多出一个「鲸鱼娘」小按钮：
-
-- 灰点「鲸鱼娘」：没运行，点一下启动；
-- 绿点「鲸鱼娘 开」：在桌面上，点一下隐藏；
-- 黄点「鲸鱼娘 隐」：还在运行但已隐藏，点一下叫回来。
-
-按钮每 5 秒从 `/bluefish-pet/status` 同步一次状态，点击时立即刷新；鼠标悬停会显示提示。
-斜杠命令仍然保留，两种方式等价。
-
-## 命令
-
-| 命令 | 作用 |
-| --- | --- |
-| `/pet` | 没启动就启动；已经在跑就切换显示 / 隐藏 |
-| `/pet-start` | 启动桌宠 |
-| `/pet-show` | 显示桌宠 |
-| `/pet-hide` | 隐藏桌宠 |
-| `/pet-quit` | 退出桌宠 |
-| `/pet-status` | 查看是否在运行 / 是否显示中 |
-
-## 安装
-
-一键脚本（在 dshpeg 仓库根目录）：
-
-```bash
-bash scripts/install-plugin.sh
+```
+DSH 主机（Node）                          DSH 客户端（浏览器）
+┌──────────────────────────┐              ┌──────────────────────────┐
+│ lib/index.js             │              │ lib/client.js            │
+│  · /pet 等 commands      │              │  · sidebar.footer.action │
+│  · 启动时 open App       │              │  · 每 5s 查状态          │
+│  · 通过 bluefish:// 控制 │              │  · 点击 POST /toggle    │
+└────────────┬─────────────┘              └────────────┬─────────────┘
+             │ open / bluefish://                       │ HTTP
+             ▼                                          ▼
+        鲸鱼娘.app  ──────────  127.0.0.1:47113  ─────────┘
+                              /status /toggle /show /hide
 ```
 
-它做的就是「软链 + 用户 patch 层 insert 行」两件事，幂等、会先备份 `cordis.patch.yml`；
-卸载用 `bash scripts/uninstall-plugin.sh`。
+- **宿主半边**（`lib/index.js`）注册斜杠命令，并用 `open` 启动 App、`bluefish://` URL scheme 控制已运行的 App；
+- **客户端半边**（`lib/client.js`）通过 `ctx.slots.register('sidebar.footer.action', …)` 放按钮，直接 `fetch('http://127.0.0.1:47113/status')`；
+- 桌宠 App 内置一个只监听本机的 HTTP 控制服务（Network.framework，带 CORS），所以不需要 DSH 的 `webServer` 服务；
+- 自动启动日志写在**插件安装目录下的 `plugin.log`**，排查时先看 `auto start` 行。
 
-**桌面版（desktop profile）已经挂载好了**：桌面版 profile 由 Electron 应用独占管理，
-`dsh plugin --profile desktop add ...` 会直接拒绝（`profile "desktop" is managed
-exclusively by the Electron application`），所以这里用「软链 + 用户 patch 层」手动挂载：
+## 常见问题
 
-- `~/.dsh/profiles/desktop/node_modules/dsh-bluefish-pet` → 本目录（软链）
-- `~/.dsh/profiles/desktop/cordis.patch.yml` 末尾加了：
-
-  ```yaml
-  - insert:
-      - id: bluefish-pet
-        name: dsh-bluefish-pet
-  ```
-
-**重启 DSH 桌面版**后插件才会挂载（当前会话不受影响，重启后输入 `/pet` 即可）。
-原文件备份在 `cordis.patch.yml.bak-bluefish`。
-
-其他 profile（比如 `web`）可以直接用 CLI：
+**按钮一直是灰色，点了没反应？**
+先确认 App 在运行：
 
 ```bash
-dsh plugin --profile web add /Users/daiwei/project/myself/dshpeg/dsh-plugin-bluefish-pet
+curl -s http://127.0.0.1:47113/status
+# {"ok":true,"running":true,"visible":true}
 ```
 
-手动挂载（其他 profile 或桌面版重装时）：
+- 连不上 → App 没启动，或被移动了；用 `/pet` 或双击 App 启动；
+- 能连上但按钮灰 → DSH 客户端还是旧代码，重启一次 DSH。
 
-1. 在 `~/.dsh/profiles/desktop/package.json` 的 dependencies 里加
-   `"dsh-bluefish-pet": "file:/Users/daiwei/project/myself/dshpeg/dsh-plugin-bluefish-pet"`；
-2. 在 `~/.dsh/profiles/desktop/cordis.patch.yml` 末尾加：
+**自动启动没生效？**
+- 看插件安装目录下的 `plugin.log`；
+- 确认 App 在 `/Applications/WhaleGirl.app`，或设置 `WHALEGIRL_APP`；
+- 插件页显示「启动失败」时，多半是宿主没加载，升级 DSH 后重启。
 
-   ```yaml
-   - insert:
-       - id: bluefish-pet
-         name: dsh-bluefish-pet
-   ```
+**按钮能切换但 App 不出现？**
+这是 App 自身窗口位置问题，不是插件：用菜单栏小鱼 →「回到右下角」，或：
 
-3. 在 profile 目录跑一次 `pnpm install`，然后重启 DSH。
+```bash
+curl -X POST http://127.0.0.1:47113/recenter
+```
 
-## 原理
+## 开发
 
-- 这是一个 **host-only** 插件：`apply(ctx)` 里用 `ctx.commands.register(...)` 注册命令，处理器跑在 DSH 的 Node 进程里，所以可以直接起进程；
-- 启动用 `/usr/bin/open <WhaleGirl.app>`；控制已运行的宠物用 **`bluefish://` URL scheme**（`toggle` / `show` / `hide` / `quit`），桌宠那边由 `AppDelegate.application(_:open:)` 接收；
-- 桌宠每次显示 / 隐藏会把状态写到 `~/.dsh/storages/bluefish-pet.json`，插件读它来实现 `/pet-status` 和侧边栏按钮的状态；
-- 界面半边（`lib/client.js`）是 DSH 的 client 插件：通过 `ctx.slots.register('sidebar.footer.action', ...)` 放按钮，`fetch('/bluefish-pet/status')` / `POST /bluefish-pet/toggle` 调主机半边注册的 `webServer` 路由；
-- 找不到 app 时用 `WHALEGIRL_APP=/path/to/WhaleGirl.app` 指定路径（兼容旧的 `BLUEFISH_APP`；默认会找
-  `~/project/myself/dshpeg/build/WhaleGirl.app`、`/Applications/WhaleGirl.app`、`~/Applications/WhaleGirl.app`，以及旧的 BlueFish 路径）。
+```
+lib/index.js       宿主：commands、自动启动、bluefish:// 控制
+lib/client.js      客户端：sidebar.footer.action 按钮（DSH module-loader 格式）
+cordis.patch.yml   组合包 patch，安装后自动挂载
+```
 
-## 依赖
+纯 JavaScript，无构建步骤。本地调试时把文件夹路径填进 DSH 插件页安装即可；改完代码重启 DSH 生效。
+`npm pack` 可打出发布用的 tarball。
 
-- 鲸鱼娘桌宠需要已经构建好（`build/WhaleGirl.app`），并且是带 `bluefish://` scheme 的版本；
-- DSH `>= 0.1.5-rc.1`（提供 `commands` 服务）。
+## License
+
+MIT
