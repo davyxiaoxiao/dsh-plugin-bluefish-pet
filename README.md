@@ -73,6 +73,19 @@ github:davyxiaoxiao/dsh-plugin-bluefish-pet
 | `/pet-quit` | 退出桌宠 |
 | `/pet-status` | 查看是否在运行 / 是否显示中 |
 
+## 更新
+
+DSH 桌面版的内置插件页对「按名字安装」的组合包，更新路径是**先卸载再重新安装**（这是插件管理器的行为，不是插件自身）：
+
+1. 插件页里把 `dsh-bluefish-pet` 卸载 / 关闭；
+2. 重新输入 `dsh-bluefish-pet` 安装（会拉取 npm 最新版）；
+3. 重启 DSH。
+
+更省事的方式是用 **DSH 插件市场**（dshmarket）的「更新」功能，它会检查已安装插件的 npm 新版本并原地更新。
+重新安装后 `autoStart` 等配置可能会丢，需要的话重新加一次。
+
+App 的更新则是下载新的 pkg **覆盖安装**，不需要先卸载。
+
 ## 配置
 
 默认随 DSH 自动启动。要关掉，在 DSH profile 的插件条目上加：
