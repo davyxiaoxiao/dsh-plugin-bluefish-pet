@@ -27,7 +27,7 @@
 
 - macOS 13 或更高
 - DSH 桌面版 `>= 0.1.5-rc.1`
-- 先安装 [鲸鱼娘 App](https://github.com/davyxiaoxiao/whalegirl)，默认放在 `/Applications/WhaleGirl.app`
+- 先安装 [鲸鱼娘 App](https://github.com/davyxiaoxiao/dsh-whalegirl)，默认放在 `/Applications/WhaleGirl.app`
   （也支持 `WHALEGIRL_APP=/path/to/WhaleGirl.app`，以及 `~/Applications`、旧 BlueFish 路径）
 
 ## 安装
