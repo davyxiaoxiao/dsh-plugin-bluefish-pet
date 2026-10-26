@@ -29,14 +29,14 @@
 - DSH 桌面版 `>= 0.1.5-rc.1`
 - 先安装 [鲸鱼娘 App](https://github.com/davyxiaoxiao/dsh-whalegirl/releases)
   - macOS：默认找 `/Applications/鲸鱼娘.app`，也兼容旧的 `/Applications/WhaleGirl.app`
-  - Windows：默认找 `%LOCALAPPDATA%\鲸鱼娘\whalegirl-app.exe`，并尝试 `Programs`、`Program Files` 等常见位置
+  - Windows：默认找 `%LOCALAPPDATA%\鲸鱼娘\whalegirl-app.exe`，并尝试 `Programs`、`Program Files` 等常见位置；如果安装时选了自定义目录（例如 `D:\新建文件夹 (3)\鲸鱼娘`），会从 NSIS 卸载注册表的 `InstallLocation` / `DisplayIcon` 反查
   - 也可以设置 `WHALEGIRL_APP` 指向 `.app` 或 `.exe`，或在插件配置里写 `appPath`
 
 ## 安装
 
 插件只有几十 KB，安装动作就是在 DSH 的插件页填一个来源。先确认上面「前置条件」里的鲸鱼娘 App 已经装好。
 
-> **1.1.0 跨平台版暂未发布到 npm**（当前 npm 上是 1.0.1，macOS-only）。在 npm 更新前，请用下面的 GitHub 方式安装；装好后重启 DSH。
+> **1.1.x 跨平台版暂未发布到 npm**（当前 npm 上是 1.0.1，macOS-only）。在 npm 更新前，请用下面的 GitHub 方式安装；装好后重启 DSH。
 
 在 DSH 左侧「插件」页 → 安装 → 输入包名：
 
