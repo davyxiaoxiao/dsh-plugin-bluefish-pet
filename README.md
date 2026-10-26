@@ -3,11 +3,11 @@
 [![npm version](https://img.shields.io/npm/v/dsh-bluefish-pet?color=2f81f7&label=npm)](https://www.npmjs.com/package/dsh-bluefish-pet)
 [![npm downloads](https://img.shields.io/npm/dm/dsh-bluefish-pet?color=2f81f7)](https://www.npmjs.com/package/dsh-bluefish-pet)
 [![license](https://img.shields.io/npm/l/dsh-bluefish-pet?color=54e39a)](./LICENSE)
-[![platform](https://img.shields.io/badge/platform-macOS%2013%2B-000?logo=apple&logoColor=white)](https://github.com/davyxiaoxiao/dsh-plugin-bluefish-pet)
+[![platform](https://img.shields.io/badge/platform-macOS%2013%2B%20%7C%20Windows%2010%2B-000)](https://github.com/davyxiaoxiao/dsh-plugin-bluefish-pet)
 
 > 在 DSH 侧边栏启动 / 隐藏 / 显示 / 退出「鲸鱼娘」桌面宠物，并随 DSH 启动自动拉起。
 
-一个 **host + client** 的 DSH 插件，配合独立的 macOS 桌宠 App「鲸鱼娘」使用。
+一个 **host + client** 的 DSH 插件，配合独立的 macOS / Windows 桌宠 App「鲸鱼娘」使用。
 *Control the BlueFish desktop pet from DSH's sidebar — start, hide, show, quit, and auto-launch with DSH.*
 
 ---
@@ -25,16 +25,18 @@
 
 ## 前置条件
 
-- macOS 13 或更高
+- macOS 13+（Apple Silicon）或 Windows 10 1809+
 - DSH 桌面版 `>= 0.1.5-rc.1`
-- 先安装 [鲸鱼娘 App](https://github.com/davyxiaoxiao/dsh-whalegirl)，默认放在 `/Applications/WhaleGirl.app`
-  （也支持 `WHALEGIRL_APP=/path/to/WhaleGirl.app`，以及 `~/Applications`、旧 BlueFish 路径）
+- 先安装 [鲸鱼娘 App](https://github.com/davyxiaoxiao/dsh-whalegirl/releases)
+  - macOS：默认找 `/Applications/鲸鱼娘.app`，也兼容旧的 `/Applications/WhaleGirl.app`
+  - Windows：默认找 `%LOCALAPPDATA%\鲸鱼娘\whalegirl-app.exe`，并尝试 `Programs`、`Program Files` 等常见位置
+  - 也可以设置 `WHALEGIRL_APP` 指向 `.app` 或 `.exe`，或在插件配置里写 `appPath`
 
 ## 安装
 
 插件只有几十 KB，安装动作就是在 DSH 的插件页填一个来源。先确认上面「前置条件」里的鲸鱼娘 App 已经装好。
 
-### 方式 A：npm（推荐）
+> **1.1.0 跨平台版暂未发布到 npm**（当前 npm 上是 1.0.1，macOS-only）。在 npm 更新前，请用下面的 GitHub 方式安装；装好后重启 DSH。
 
 在 DSH 左侧「插件」页 → 安装 → 输入包名：
 
@@ -98,6 +100,8 @@ App 的更新则是下载新的 pkg **覆盖安装**，不需要先卸载。
       name: dsh-bluefish-pet
       config:
         autoStart: false
+        # 可选：自定义 App 路径（.app 或 .exe）
+        # appPath: "C:\\Users\\me\\AppData\\Local\\鲸鱼娘\\whalegirl-app.exe"
 ```
 
 ## 工作原理
@@ -116,8 +120,8 @@ DSH 主机（Node）                          DSH 客户端（浏览器）
                               /status /toggle /show /hide
 ```
 
-- **宿主半边**（`lib/index.js`）注册斜杠命令，并用 `open` 启动 App、`bluefish://` URL scheme 控制已运行的 App；
-- **客户端半边**（`lib/client.js`）通过 `ctx.slots.register('sidebar.footer.action', …)` 放按钮，直接 `fetch('http://127.0.0.1:47113/status')`；
+- **宿主半边**（`lib/index.js`）注册斜杠命令，按平台启动 App（macOS `open`，Windows `spawn`），并通过 `127.0.0.1:47113` 控制；
+- **客户端半边**（`lib/client.js`）通过 `ctx.slots.register('sidebar.footer.action', …)` 放按钮；优先走宿主的 `/bluefish-pet/*` 路由（可在未启动时拉起 App），旧宿主则退回直接访问控制端口；
 - 桌宠 App 内置一个只监听本机的 HTTP 控制服务（Network.framework，带 CORS），所以不需要 DSH 的 `webServer` 服务；
 - 自动启动日志写在**插件安装目录下的 `plugin.log`**，排查时先看 `auto start` 行。
 
@@ -136,7 +140,12 @@ curl -s http://127.0.0.1:47113/status
 
 **自动启动没生效？**
 - 看插件安装目录下的 `plugin.log`；
-- 确认 App 在 `/Applications/WhaleGirl.app`，或设置 `WHALEGIRL_APP`；
+- 确认 App 已安装；macOS 默认 `/Applications/鲸鱼娘.app`，Windows 默认为 `%LOCALAPPDATA%\鲸鱼娘\whalegirl-app.exe`；
+- 找不到就设置 `WHALEGIRL_APP`，例如：
+  ```powershell
+  $env:WHALEGIRL_APP = "$env:LOCALAPPDATA\鲸鱼娘\whalegirl-app.exe"
+  ```
+  或在插件配置里写 `appPath`；
 - 插件页显示「启动失败」时，多半是宿主没加载，升级 DSH 后重启。
 
 **按钮能切换但 App 不出现？**
@@ -149,7 +158,7 @@ curl -X POST http://127.0.0.1:47113/recenter
 ## 开发
 
 ```
-lib/index.js       宿主：commands、自动启动、bluefish:// 控制
+lib/index.js       宿主：commands、自动启动、跨平台启动 + 控制端口
 lib/client.js      客户端：sidebar.footer.action 按钮（DSH module-loader 格式）
 cordis.patch.yml   组合包 patch，安装后自动挂载
 ```
