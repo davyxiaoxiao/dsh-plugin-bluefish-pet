@@ -123,7 +123,8 @@ DSH 主机（Node）                          DSH 客户端（浏览器）
 - **宿主半边**（`lib/index.js`）注册斜杠命令，按平台启动 App（macOS `open`，Windows `spawn`），并通过 `127.0.0.1:47113` 控制；
 - **客户端半边**（`lib/client.js`）通过 `ctx.slots.register('sidebar.footer.action', …)` 放按钮；优先走宿主的 `/bluefish-pet/*` 路由（可在未启动时拉起 App），旧宿主则退回直接访问控制端口；
 - 桌宠 App 内置一个只监听本机的 HTTP 控制服务（Network.framework，带 CORS），所以不需要 DSH 的 `webServer` 服务；
-- 自动启动日志写在**插件安装目录下的 `plugin.log`**，排查时先看 `auto start` 行。
+- 自动启动日志同时写在**插件安装目录下的 `plugin.log`** 和 `~/.dsh/storages/bluefish-pet-plugin.log`，排查时先看 `auto start` / `plugin applied` 行。
+- 如果 App 装在非默认目录，插件会依次查 NSIS 卸载注册表、开始菜单/桌面快捷方式、运行中进程路径；也可以直接配置 `appPath`。
 
 ## 常见问题
 
